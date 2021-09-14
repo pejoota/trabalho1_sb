@@ -1,0 +1,11 @@
+Paulo José Valério Cruz
+17/0020321
+Software Básico - Turma B/2021.1
+
+Para compilar, basta utilizar o g++:
+
+g++ montador.cpp -o montador
+./montador bin.asm
+
+g++ simulador.cpp -o simulador
+./simulador bin.obj
