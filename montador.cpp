@@ -41,7 +41,7 @@ int montar(std::string nomeArquivo, std::string infoRealocacao){
 
     std::ifstream entrada;
     std::string nomeSaida = nomeArquivo, mapaDeBits = "", listaEnderecos = "";
-    std::string lineEntrada, lineAux, label, labelAux, operation, lineSaida, saidaAux = "T: ";
+    std::string lineEntrada, lineAux, label, labelAux, operation, lineSaida, saidaAux = "";
     std::vector<std::string> entradaAux;
     int endereco = 0, lineAuxSize, labelSize, tamanho = 0, opcode = 0;
     int contadorLinha = 1, contadorPosicao = 0, valor = 0, jump = 0;
@@ -162,7 +162,7 @@ int montar(std::string nomeArquivo, std::string infoRealocacao){
 
                 contadorPosicao += tabelaOperacoes->validaOperandos(opcode, operands, contadorLinha);
                 mapaDeBits += "011";
-                listaEnderecos += std::to_string(contadorPosicao - 2) + std::to_string(contadorPosicao - 1) + " ";
+                listaEnderecos += std::to_string(contadorPosicao - 2) + " " + std::to_string(contadorPosicao - 1) + " ";
 
             } else {
 
@@ -197,14 +197,14 @@ int montar(std::string nomeArquivo, std::string infoRealocacao){
 
     if(msgErro.begin() != msgErro.end())
         return 1;
-    saida << "\nH: " + contadorPosicao;
+    saida << "\nH: " + std::to_string(contadorPosicao);
 
     if(infoRealocacao == "0")
         saida << "\nH: " + mapaDeBits + "\n";
     else
         saida << "\nH: " + listaEnderecos + "\n";
 
-    saida << saidaAux;
+    saida << "T: " + saidaAux;
     entrada.close();
     saida.close();
     return 0;
