@@ -6,47 +6,42 @@ int main (int argc, char **argv){
     char escolha;
     int ctrl = argc;
 
-    do{
-        
-        switch (ctrl){
-    
-            case 1:
-                std::cout << "Digite o nome do programa .asm a ser montado:\n>> ";
-                std::cin >> argv[1];
-    
-            case 2:
-    
-                switch (montar(argv[1])){
-                    case 0:
-                        std::cout << "Programa montado com sucesso!" << std::endl;
-                        break;
-    
-                    default:
-                        std::cout << "Não foi possível montar o programa. Tente novamente." << std::endl;
-                        break;
-                }
-    
-                break;
-    
+    switch (ctrl){
+
+        case 3:
+        std::cout << "Digite o nome do programa .asm a ser montado:\n>> ";
+        std::cin >> argv[1];
+
+        case 4:
+
+        switch (montar(argv[3], argv[2])){
+            case 0:
+            std::cout << "Programa montado com sucesso!" << std::endl;
+            break;
+
             default:
-                std::cout << "Selecione apenas um programa para ser montado de cada vez!" << std::endl;
-                break;
+            std::cout << "Não foi possível montar o programa. Tente novamente." << std::endl;
+            break;
         }
 
-        ctrl = 1;
-        std::cout << "Deseja montar outro programa? (S/n)" << std::endl;
-        std::cin >> escolha;
+        break;
 
-    } while (escolha != 'n' && escolha != 'N');
+        default:
+        std::cout << "Execute o montador especificando o modo de realocação e o nome do programa a ser montado.\n Exemplo: ./montador -r 0 programa.asm\n\n" << std::endl;
+        break;
+    }
 
     return 0;
 }
 
-int montar(std::string nomeArquivo){
+int montar(std::string nomeArquivo, std::string infoRealocacao){
+
+    if(infoRealocacao != "0" && infoRealocacao != "1")
+        return 1;
 
     std::ifstream entrada;
-    std::string nomeSaida = nomeArquivo;
-    std::string lineEntrada, lineAux, label, labelAux, operation, lineSaida, saidaAux = "";
+    std::string nomeSaida = nomeArquivo, mapaDeBits = "", listaEnderecos = "";
+    std::string lineEntrada, lineAux, label, labelAux, operation, lineSaida, saidaAux = "T: ";
     std::vector<std::string> entradaAux;
     int endereco = 0, lineAuxSize, labelSize, tamanho = 0, opcode = 0;
     int contadorLinha = 1, contadorPosicao = 0, valor = 0, jump = 0;
@@ -54,10 +49,11 @@ int montar(std::string nomeArquivo){
     bool labelAnterior = false, flag = true, antesTexto;
     operandos_t operands;
 
-    eraseAllSubStr(nomeSaida, "asm");
-    nomeSaida += "obj";
+    eraseAllSubStr(nomeSaida, ".asm");
 
-    std::ofstream saida (nomeSaida);
+    std::ofstream saida (nomeSaida + ".obj");
+    saida << "H: " + nomeSaida;
+
     Operacoes *tabelaOperacoes = new Operacoes();
     Controlador *controle = new Controlador();
 
@@ -81,7 +77,7 @@ int montar(std::string nomeArquivo){
             flag = true;
 
         } else if(lineEntrada == "SECTION TEXT")
-            flag = false;
+        flag = false;
 
         if(antesTexto && flag)
             contadorLinha++;
@@ -89,7 +85,7 @@ int montar(std::string nomeArquivo){
         if (flag)
             entradaAux.push_back(lineEntrada);
         else{
-            
+
             entradaAux.emplace(entradaAux.begin()+i, lineEntrada);
             i++;
         }
@@ -126,8 +122,9 @@ int montar(std::string nomeArquivo){
                     saidaAux += operands.operandos[0];
                     saidaAux += ' ';
                     saidaAux = controle->insereSimboloRotulo(label, contadorPosicao, contadorLinha, saidaAux);
+                    mapaDeBits += "0";
                     contadorPosicao++; 
-                            
+
                     continue;
 
                 } else if(operation == "SPACE"){    
@@ -137,8 +134,12 @@ int montar(std::string nomeArquivo){
                     temp = temp*jump;
                     saidaAux += temp;
                     saidaAux = controle->insereSimboloRotulo(label, contadorPosicao, contadorLinha, saidaAux);
+
+                    for (int i = 0; i < jump; i++)
+                        mapaDeBits += "0";
+
                     contadorPosicao += jump;
-                
+
                     continue;
 
                 } else
@@ -151,10 +152,24 @@ int montar(std::string nomeArquivo){
 
                 geraMsgErro(contadorLinha, "léxico", "Operação não encontrada.");
                 continue;
-            }
-            
-            else
+
+            } else if(opcode == 14){
+
                 contadorPosicao += tabelaOperacoes->validaOperandos(opcode, operands, contadorLinha);
+                mapaDeBits += "0";
+
+            } else if(opcode == 9){
+
+                contadorPosicao += tabelaOperacoes->validaOperandos(opcode, operands, contadorLinha);
+                mapaDeBits += "011";
+                listaEnderecos += std::to_string(contadorPosicao - 2) + std::to_string(contadorPosicao - 1) + " ";
+
+            } else {
+
+                contadorPosicao += tabelaOperacoes->validaOperandos(opcode, operands, contadorLinha);
+                mapaDeBits += "01";
+                listaEnderecos += std::to_string(contadorPosicao - 1) + " ";
+            }
 
             jump_int[0] = getJump(operands.operandos[0]);
             jump_int[1] = getJump(operands.operandos[1]);
@@ -163,9 +178,9 @@ int montar(std::string nomeArquivo){
                 if(strlen(operands.operandos[1]) != 0){
                     controle->insereSimboloOperando(operands.operandos[0], contadorPosicao-2, contadorLinha, jump_int[0]);
                     controle->insereSimboloOperando(operands.operandos[1], contadorPosicao-1, contadorLinha, jump_int[1]);
-                        
+
                 } else
-                    controle->insereSimboloOperando(operands.operandos[0], contadorPosicao-1, contadorLinha, jump_int[0]);
+                controle->insereSimboloOperando(operands.operandos[0], contadorPosicao-1, contadorLinha, jump_int[0]);
             }
             
         } else {
@@ -182,6 +197,12 @@ int montar(std::string nomeArquivo){
 
     if(msgErro.begin() != msgErro.end())
         return 1;
+    saida << "\nH: " + contadorPosicao;
+
+    if(infoRealocacao == "0")
+        saida << "\nH: " + mapaDeBits + "\n";
+    else
+        saida << "\nH: " + listaEnderecos + "\n";
 
     saida << saidaAux;
     entrada.close();

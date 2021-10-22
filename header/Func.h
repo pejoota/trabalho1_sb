@@ -22,7 +22,7 @@ typedef struct operandos {
 
 std::string operator * (std::string, unsigned int);
 
-int montar(std::string); // Realiza a montagem.
+int montar(std::string, std::string); // Realiza a montagem.
 std::string stringToUpper(std::string);
 std::string findLabel(int, std::string); // Retorna o rótulo da linha. Se não houver, retorna string vazia.
 std::string particionaString(std::string, int); // Obtém pedaço da string a partir do ponto inicial até a posição definida.
