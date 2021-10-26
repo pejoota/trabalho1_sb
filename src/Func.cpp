@@ -210,3 +210,128 @@ std::string operator * (std::string a, unsigned int b) {
     }
     return output;
 }
+
+
+int getTamanho(std::string linha){
+
+    std::string tamanho = "";
+
+    for(int i = 0; i < linha.size(); i++){
+
+        if(isdigit(linha[i]))
+            tamanho += linha[i];
+    }
+
+    return std::stoi(tamanho);
+}
+
+bool encontraWhitespace(std::string linha){
+
+    for(int i = 3; i < linha.size(); i++){
+        if(linha[i] == ' ')
+            return true;
+    }
+
+    return false;
+}
+
+void preencheEnderecos(std::string linha, std::vector<std::vector<int>>& retorno){
+
+    std::string aux = "";
+    std::vector<int> retornoAux;
+
+    if(encontraWhitespace(linha)){
+
+        for(int i = 3; i < linha.size(); i++){
+
+            if(linha[i] != ' ')
+                aux += linha[i];
+
+            else {
+
+                retornoAux.push_back(std::stoi(aux));
+                aux = "";
+            }
+        }   
+
+    } else {
+
+        for(int i = 3; i < linha.size(); i++){
+
+            if(linha[i] == '1')
+                retornoAux.push_back(i - 3);
+        }
+    }
+
+    retorno.push_back(retornoAux);
+}
+
+void preencheEnderecos(std::string linha, std::vector<std::list<int>>& retorno){
+
+    std::string aux = "";
+    std::list<int> retornoAux;
+
+    if(encontraWhitespace(linha)){
+
+        for(int i = 3; i < linha.size(); i++){
+
+            if(linha[i] != ' ')
+                aux += linha[i];
+
+            else {
+
+                retornoAux.push_back(std::stoi(aux));
+                aux = "";
+            }
+        }   
+
+    } else {
+
+        for(int i = 3; i < linha.size(); i++){
+
+            if(linha[i] == '1')
+                retornoAux.push_back(i - 3);
+        }
+    }
+
+    retorno.push_back(retornoAux);
+}
+
+int soma(std::vector<int> vetor){
+
+    int retorno = 0;
+
+    for(int i = 0; i < vetor.size(); i++)
+        retorno += vetor[i];
+    
+    return retorno;
+}
+
+std::string preencheArquivo(std::vector<int> text, std::vector<int> endereco){
+
+    bool sectionText = true;
+    std::string retorno = "";
+
+    for (int i = 0; i < text.size(); ++i){
+
+        retorno += std::to_string(endereco[i]) + " " + std::to_string(text[i]);
+
+        if(text[i] == 9 && sectionText){
+
+            retorno += " " + std::to_string(text[i + 1]) + " " + std::to_string(text[i + 2]);
+            i += 2;    
+
+        } else if(text[i] == 14 || !sectionText)
+            sectionText = false;
+
+         else {
+
+            retorno += " " + std::to_string(text[i + 1]);
+            i++;
+        }
+
+        retorno += "\n";
+    }
+
+    return retorno;
+}

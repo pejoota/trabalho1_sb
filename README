@@ -9,3 +9,6 @@ g++ montador.cpp -o montador
 
 g++ simulador.cpp -o simulador
 ./simulador bin.obj
+
+g++ carregador.cpp -o carregador
+carregador bin.obj bin2.obj 3 15 10 12 1000 2500 5000

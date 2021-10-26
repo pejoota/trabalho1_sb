@@ -143,7 +143,7 @@ int montar(std::string nomeArquivo, std::string infoRealocacao){
                     continue;
 
                 } else
-                    saidaAux = controle->insereSimboloRotulo(label, contadorPosicao, contadorLinha, saidaAux);
+                saidaAux = controle->insereSimboloRotulo(label, contadorPosicao, contadorLinha, saidaAux);
             }
 
             opcode = tabelaOperacoes->getOpcode(operation);

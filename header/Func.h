@@ -8,6 +8,7 @@
 #include <vector>
 #include <cstring>
 #include <cctype>
+#include <list>
 
 #define MAX_CHAR_ROTULO 50
 #define MAX_CHAR_VARIAVEL 50
@@ -37,5 +38,13 @@ void eraseAllSubStr(std::string&, const std::string&);
 void printErros();
 
 int executar(std::string);
+
+int getTamanho(std::string);
+bool encontraWhitespace(std::string);
+void preencheEnderecos(std::string, std::vector<std::vector<int>>&);
+void preencheEnderecos(std::string, std::vector<std::list<int>>&);
+int carregar(std::vector<int>, std::vector<int>, std::vector<std::string>);
+int soma(std::vector<int>);
+std::string preencheArquivo(std::vector<int>, std::vector<int>);
 
 #endif
