@@ -53,7 +53,8 @@ int carregar(std::vector<int> tamanhoChunks, std::vector<int> enderecoChunks, st
 		sizeCounter = 0;
 
 	std::string
-		linha[numProgramas];
+		linha[numProgramas],
+		nomePrograma[numProgramas];
 
 	std::vector<int>
 		tamanhoProgramas,
@@ -88,8 +89,9 @@ int carregar(std::vector<int> tamanhoChunks, std::vector<int> enderecoChunks, st
 			return FALHA_ABERTURA;
 		
 		getline(entrada[i], linha[i]);
-		getline(entrada[i], linha[i]); //duas vezes pois o header que contém o tamanho do arquivo está na segunda linha
-	
+		nomePrograma[i] = getNome(linha[i]);
+
+		getline(entrada[i], linha[i]);
 		tamanhoProgramas.push_back(getTamanho(linha[i]));
 
 		getline(entrada[i], linha[i]);
@@ -117,7 +119,7 @@ int carregar(std::vector<int> tamanhoChunks, std::vector<int> enderecoChunks, st
 	}
 
 	for(int i = 0; i < numProgramas; i++){
-		for (; chunkCounter < tamanhoChunks.size(); chunkCounter++){
+		for (int chunksUsados = 1; chunkCounter < tamanhoChunks.size(); chunkCounter++, chunksUsados++){
 			for(sizeCounter = 0; sizeCounter < tamanhoChunks[chunkCounter]; sizeCounter++, enderecosCarregados[i]++){					
 
 				enderecoAux.push_back(enderecoChunks[chunkCounter] + sizeCounter + auxiliar);
@@ -134,6 +136,14 @@ int carregar(std::vector<int> tamanhoChunks, std::vector<int> enderecoChunks, st
 				auxiliar += sizeCounter + 1;
 				enderecos.push_back(enderecoAux);
 				enderecoAux.clear();
+				std::cout << nomePrograma[i] << " utilizando " << chunksUsados << " CHUNKS. Endereço(s) inicial(is): ";
+
+				for (int count = 0; count < chunksUsados; count++){
+					std::cout << enderecoChunks[count] << " ";
+				}
+
+				std::cout << std::endl;
+
 				break;
 			}
 		}

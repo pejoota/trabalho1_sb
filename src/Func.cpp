@@ -212,6 +212,16 @@ std::string operator * (std::string a, unsigned int b) {
 }
 
 
+std::string getNome(std::string linha){
+
+    std::string retorno;
+
+    for(int i = 3; i < linha.size(); i++)
+        retorno += linha[i];
+
+    return retorno;
+}
+
 int getTamanho(std::string linha){
 
     std::string tamanho = "";

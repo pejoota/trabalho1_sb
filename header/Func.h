@@ -39,6 +39,7 @@ void printErros();
 
 int executar(std::string);
 
+std::string getNome(std::string);
 int getTamanho(std::string);
 bool encontraWhitespace(std::string);
 void preencheEnderecos(std::string, std::vector<std::vector<int>>&);
